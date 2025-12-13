@@ -1,16 +1,16 @@
 import os
 import cv2
 import mediapipe as mp
-
-
-# ==== Setting ====
-VIDEO_PATH = "target.mp4"      
-OUTPUT_ROOT = "data/target"   
-PATCH_SIZE = 128               
-MARGIN_SCALE = 1.6             
-
-
-# Mediapipe Face Mesh reset
+ 
+ 
+# ==== Settings ====
+VIDEO_PATH = "target.mp4"       # Path to the input video file
+OUTPUT_ROOT = "data/target"     # Root directory for output patches
+PATCH_SIZE = 128                # Size of the output square patch (width and height)
+MARGIN_SCALE = 1.6              # Scale factor to expand the bounding box margin
+ 
+ 
+# Initialize Mediapipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(
     static_image_mode=False,
@@ -19,8 +19,8 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5,
 )
-
-
+ 
+ 
 # Landmark index
 MOUTH_LANDMARKS = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375,
                    291, 308, 324, 318, 402, 317, 14, 87, 178, 88]
@@ -33,12 +33,14 @@ RIGHT_EYE_LANDMARKS = [33, 7, 163, 144, 145, 153, 154, 155,
 
 
 def ensure_dirs():
+    """Ensures that the output directories for patches exist."""
     os.makedirs(os.path.join(OUTPUT_ROOT, "patch_lip"), exist_ok=True)
     os.makedirs(os.path.join(OUTPUT_ROOT, "patch_eye_l"), exist_ok=True)
     os.makedirs(os.path.join(OUTPUT_ROOT, "patch_eye_r"), exist_ok=True)
 
 
 def landmarks_to_bbox(landmarks, indices, img_w, img_h):
+    """Calculates the bounding box for a given set of landmark indices."""
     xs, ys = [], []
     for idx in indices:
         lm = landmarks[idx]
@@ -50,12 +52,13 @@ def landmarks_to_bbox(landmarks, indices, img_w, img_h):
 def expand_and_square_bbox(x_min, y_min, x_max, y_max,
                            img_w, img_h, margin_scale):
     """
-    (x_min, y_min, x_max, y_max): origin bbox
-    img_w, img_h: size of image
-    margin_scale: 1.0 = 100%, 1.6 = 160%
+    Expands and converts a bounding box to a square.
+    :param x_min, y_min, x_max, y_max: Coordinates of the original bounding box.
+    :param img_w, img_h: Dimensions of the image.
+    :param margin_scale: Factor to scale the bounding box size (e.g., 1.6 for 160%).
     """
-    cx = (x_min + x_max) * 0.5   # center x
-    cy = (y_min + y_max) * 0.5   # center y
+    cx = (x_min + x_max) * 0.5
+    cy = (y_min + y_max) * 0.5
     w = (x_max - x_min)
     h = (y_max - y_min)
     half = max(w, h) * 0.5 * margin_scale
@@ -69,6 +72,7 @@ def expand_and_square_bbox(x_min, y_min, x_max, y_max,
 
 
 def crop_and_resize(img, bbox, patch_size):
+    """Crops an image using a bounding box and resizes it to a square patch."""
     x0, y0, x1, y1 = bbox
     if x1 <= x0 or y1 <= y0:
         return None
@@ -81,17 +85,17 @@ def crop_and_resize(img, bbox, patch_size):
 def process_video():
     ensure_dirs()
 
-    cap = cv2.VideoCapture(VIDEO_PATH)  # open current video file
-    frame_idx = 0                       # index of current frame
+    cap = cv2.VideoCapture(VIDEO_PATH)  # Open the video file
+    frame_idx = 0                       # Initialize frame index
 
     while True:
-        ret, frame = cap.read()        # read next frame
-        if not ret:                    # finish if last frame
+        ret, frame = cap.read()        # Read the next frame
+        if not ret:                    # Break if it's the last frame
             break
 
-        img_h, img_w = frame.shape[:2]  # hight and weight of image
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # BGR -> RGB
-        results = face_mesh.process(rgb)              # export facial landmarks
+        img_h, img_w = frame.shape[:2]  # Get image height and width
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB for Mediapipe
+        results = face_mesh.process(rgb)              # Process the frame to get facial landmarks
 
         if not results.multi_face_landmarks:
             print(f"[warning] no detectable face → frame {frame_idx}")
@@ -100,29 +104,29 @@ def process_video():
 
         lm = results.multi_face_landmarks[0].landmark
 
-        # 1) mouth/eyes bbox 
+        # 1) Get bounding boxes for mouth and eyes from landmarks
         mouth_box = landmarks_to_bbox(lm, MOUTH_LANDMARKS, img_w, img_h)
         eye_l_box = landmarks_to_bbox(lm, LEFT_EYE_LANDMARKS, img_w, img_h)
         eye_r_box = landmarks_to_bbox(lm, RIGHT_EYE_LANDMARKS, img_w, img_h)
  
-        # 2) clamp bbox for squre + margin expand
+        # 2) Expand bounding boxes to be square and apply margin
         mouth_box = expand_and_square_bbox(*mouth_box, img_w, img_h, MARGIN_SCALE)
         eye_l_box = expand_and_square_bbox(*eye_l_box, img_w, img_h, MARGIN_SCALE)
         eye_r_box = expand_and_square_bbox(*eye_r_box, img_w, img_h, MARGIN_SCALE)
 
-        # 3) crop patches from orign and resize to 128x128
+        # 3) Crop patches from the original frame and resize to PATCH_SIZE
         mouth_p = crop_and_resize(frame, mouth_box, PATCH_SIZE)
         left_p  = crop_and_resize(frame, eye_l_box, PATCH_SIZE)
         right_p = crop_and_resize(frame, eye_r_box, PATCH_SIZE)
 
     
-        # Skip if failed
+        # Skip frame if any patch extraction failed
         if mouth_p is None or left_p is None or right_p is None:
-            print(f"[경고] 패치 추출 실패 → frame {frame_idx}")
+            print(f"[Warning] Failed to extract patches -> frame {frame_idx}")
             frame_idx += 1
             continue
 
-        # 4) Save the file
+        # 4) Save the extracted patches to files
         name = f"frame_{frame_idx:06d}.png"
         cv2.imwrite(os.path.join(OUTPUT_ROOT, "patch_lip",   name), mouth_p)
         cv2.imwrite(os.path.join(OUTPUT_ROOT, "patch_eye_l", name), left_p)
