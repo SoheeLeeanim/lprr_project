@@ -17,14 +17,13 @@ import numpy as np
 class PatchTripletDataset(Dataset):
     def __init__(self, source_root, target_root, pairs, transform=None):
         """
-        pairs: [(src_filename, tgt_filename), ...]  # 프레임 매칭된 파일명 리스트
+        pairs: A list of (source_filename, target_filename) tuples, representing frame-matched files.
         """
         self.source_root = source_root
         self.target_root = target_root
         self.pairs = pairs
         self.transform = transform or T.Compose([T.ToTensor()])
 
-        # 폴더명 고정 (너가 말해준 이름)
         self.src_lip = os.path.join(source_root, "patch_lip")
         self.src_el  = os.path.join(source_root, "patch_eye_l")
         self.src_er  = os.path.join(source_root, "patch_eye_r")
@@ -209,7 +208,6 @@ def main():
             out_lip = os.path.join(sample_dir, f"epoch_{epoch:03d}_lip_rand.png")
             vutils.save_image(torch.cat([src_lip, src_rec_lip, tgt_lip, tgt_pred_lip], dim=0), out_lip, nrow=n)
 
-            # eye는 pair 확인용
             out_el = os.path.join(sample_dir, f"epoch_{epoch:03d}_eyeL_pair_rand.png")
             vutils.save_image(torch.cat([torch.stack(src_els).to(device), torch.stack(tgt_els).to(device)], dim=0), out_el, nrow=n)
 

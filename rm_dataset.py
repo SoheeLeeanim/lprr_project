@@ -25,14 +25,16 @@ class LipPatchDataset(Dataset):
         self.source_files = sorted(os.listdir(source_root))
         self.target_files = sorted(os.listdir(target_root))
 
-        # --- NEW: build explicit pairs so we can reuse filenames (lip/eye) ---
+        # Build a list of explicit (source_filename, target_filename) pairs.
+        # This allows reusing the same paired filenames for different patches (e.g., lips, eyes)
+        # by just changing the root directory.
         self.pairs = []
 
-        # offset이 양수/음수 둘 다 가능하게 처리
-        # target_idx = src_idx + offset
+        # Handle both positive and negative offsets.
+        # The target index is calculated as: target_idx = source_idx + offset.
         for src_idx in range(len(self.source_files)):
             tgt_idx = src_idx + self.offset
-            if 0 <= tgt_idx < len(self.target_files):
+            if 0 <= tgt_idx < len(self.target_files): # Ensure the target index is valid
                 self.pairs.append((self.source_files[src_idx], self.target_files[tgt_idx]))
 
         self.length = len(self.pairs)
@@ -58,4 +60,3 @@ class LipPatchDataset(Dataset):
         tgt_tensor = self.transform(tgt_img)
 
         return src_tensor, tgt_tensor
-
