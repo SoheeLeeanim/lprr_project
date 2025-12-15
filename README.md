@@ -157,12 +157,7 @@ The preview is used to:
 
 ## WEM (Weight Estimation Module)
 
-WEM maps reenacted patches to **PCA-compressed blendshape weights**.
-
-Important notes:
-- WEM is implemented entirely in Python (PyTorch)
-- DCC (Blender) is only required **once** to generate PCA data
-- No DCC is used during WEM training or inference
+WEM maps reenacted patches to **PCA-compressed blendshape weights**
 
 (Currently under development.)
 
