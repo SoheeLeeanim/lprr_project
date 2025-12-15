@@ -39,66 +39,64 @@ This repository follows the same modular structure and training order.
 ---
 
 ## Directory Structure
-
+```
 lprr_project/
-│
 ├─ data/
-│ ├─ source/ # Source actor patch images
-│ │ ├─ patch_lip/
-│ │ ├─ patch_eye_l/
-│ │ └─ patch_eye_r/
-│ │
-│ ├─ target/ # Target character (MetaHuman) patch images
-│ │ ├─ patch_lip/
-│ │ ├─ patch_eye_l/
-│ │ └─ patch_eye_r/
-│ │
-│ └─ pca/ # PCA assets (generated via DCC)
-│ ├─ pca_basis.npy
-│ ├─ pca_mean.npy
-│ └─ pca_weight.npy
+│  ├─ source/                 # Source actor patch images
+│  │  ├─ patch_lip/
+│  │  ├─ patch_eye_l/
+│  │  └─ patch_eye_r/
+│  │
+│  ├─ target/                 # Target character (MetaHuman) patch images
+│  │  ├─ patch_lip/
+│  │  ├─ patch_eye_l/
+│  │  └─ patch_eye_r/
+│  │
+│  └─ pca/                    # PCA assets (generated via DCC)
+│     ├─ pca_basis.npy
+│     ├─ pca_mean.npy
+│     └─ pca_weight.npy
 │
 ├─ code/
-│ ├─ apem/ # Patch extraction & alignment
-│ │ ├─ extract_patches.py
-│ │ └─ init.py
-│ │
-│ ├─ rm/ # Reenactment Module
-│ │ ├─ models/
-│ │ │ └─ autoencoder.py
-│ │ │
-│ │ ├─ datasets/
-│ │ │ └─ patch_dataset.py
-│ │ │
-│ │ ├─ train_lip.py # RM training (lip)
-│ │ ├─ train_eye_l.py # RM training (left eye)
-│ │ ├─ train_eye_r.py # RM training (right eye)
-│ │ ├─ preview.py # RM video preview generator
-│ │ └─ init.py
-│ │
-│ ├─ wem/ # Weight Estimation Module (WIP)
-│ │ ├─ models/
-│ │ ├─ train.py
-│ │ ├─ infer.py
-│ │ └─ init.py
-│ │
-│ └─ utils/ # Shared utilities
-│ ├─ image.py
-│ ├─ video.py
-│ └─ init.py
+│  ├─ apem/                   # Patch extraction & alignment
+│  │  ├─ extract_patches.py
+│  │  └─ __init__.py
+│  │
+│  ├─ rm/                     # Reenactment Module
+│  │  ├─ models/
+│  │  │  └─ autoencoder.py
+│  │  ├─ datasets/
+│  │  │  └─ patch_dataset.py
+│  │  ├─ train_lip.py         # RM training (lip)
+│  │  ├─ train_eye_l.py       # RM training (left eye)
+│  │  ├─ train_eye_r.py       # RM training (right eye)
+│  │  ├─ video_preview.py           # RM video preview generator
+│  │  └─ __init__.py
+│  │
+│  ├─ wem/                    # Weight Estimation Module (WIP)
+│  │  ├─ models/
+│  │  ├─ train.py
+│  │  ├─ infer.py
+│  │  └─ __init__.py
+│  │
+│  └─ utils/                  # Shared utilities
+│     ├─ image.py
+│     ├─ video.py
+│     └─ __init__.py
 │
-├─ checkpoints/ # Trained model checkpoints
-│ ├─ rm_lip/
-│ ├─ rm_eye_l/
-│ └─ rm_eye_r/
+├─ checkpoints/               # Trained model checkpoints
+│  ├─ rm_lip/
+│  ├─ rm_eye_l/
+│  └─ rm_eye_r/
 │
-├─ samples/ # Training sample outputs (4-row grids)
-│ ├─ rm_lip/
-│ ├─ rm_eye_l/
-│ └─ rm_eye_r/
+├─ samples/                   # Training sample outputs (4-row grids)
+│  ├─ rm_lip/
+│  ├─ rm_eye_l/
+│  └─ rm_eye_r/
 │
-├─ runs/ # Experiment logs (optional)
+├─ runs/                      # Experiment logs (optional)
 └─ README.md
+```
 
 
 ---
@@ -119,11 +117,19 @@ lprr_project/
 (as described in the paper)
 
 ### Output Visualization
-Each RM training script saves 4-row sample images:
+Each RM training script saves 4-row sample images: 
+<br>
 [source]
 [source reconstruction]
 [target]
 [reenacted target]
+
+<p align="center">
+  <img src="samples/rm_eye_l/epoch_008_eye_l_rand.png" width="45%">
+  <img src="samples/rm_lip/epoch_004_lip_rand.png" width="45%">
+</p>
+
+
 
 These samples are also assembled into **temporal preview videos** for debugging stability and alignment.
 
@@ -132,6 +138,7 @@ These samples are also assembled into **temporal preview videos** for debugging 
 ## RM Preview Video
 
 Sample preview videos are included in this repository.
+
 
 Each frame shows:
 - lip / left eye / right eye patches side by side
