@@ -139,7 +139,7 @@ These samples are also assembled into **temporal preview videos** for debugging 
 
 Sample preview videos are included in this repository.
 
-[![RM Preview](assets/rm_preview_thumb.png)](samples/rm_preview_lip_eyeR_eyeL.mp4)
+[![RM Preview](samples/rm_preview_thumb.png)](samples/rm_preview_lip_eyeR_eyeL.mp4)
 
 
 Each frame shows:
