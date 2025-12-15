@@ -139,7 +139,7 @@ These samples are also assembled into **temporal preview videos** for debugging 
 
 Sample preview videos are included in this repository.
 
-### [▶ click image to Download / Watch RM Preview]
+#### ▶ click image below to Download / Watch RM Preview
 [![RM Preview](samples/rm_preview_thumb.png)](samples/rm_preview_lip_eyeR_eyeL.mp4)
 
 
