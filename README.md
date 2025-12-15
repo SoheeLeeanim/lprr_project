@@ -1,4 +1,4 @@
-# Local Patch Facial Retargeting (LPRR) – Paper Reproduction
+# Local Patch Facial Retargeting Paper Reproduction (LPRR)
 
 This repository is a **personal research reproduction project** based on the paper  
 **“Deep-Learning-Based Facial Retargeting Using Local Patches”**.
