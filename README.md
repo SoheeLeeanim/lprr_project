@@ -70,7 +70,7 @@ lprr_project/
 │  │  ├─ train_lip.py         # RM training (lip)
 │  │  ├─ train_eye_l.py       # RM training (left eye)
 │  │  ├─ train_eye_r.py       # RM training (right eye)
-│  │  ├─ preview.py           # RM video preview generator
+│  │  ├─ video_preview.py           # RM video preview generator
 │  │  └─ __init__.py
 │  │
 │  ├─ wem/                    # Weight Estimation Module (WIP)
@@ -117,11 +117,19 @@ lprr_project/
 (as described in the paper)
 
 ### Output Visualization
-Each RM training script saves 4-row sample images:
+Each RM training script saves 4-row sample images: 
+<br>
 [source]
 [source reconstruction]
 [target]
 [reenacted target]
+
+<p align="center">
+  <img src="samples/rm_eye_l/epoch_008_eye_l_rand.png" width="45%">
+  <img src="samples/rm_lip/epoch_004_lip_rand.png" width="45%">
+</p>
+
+
 
 These samples are also assembled into **temporal preview videos** for debugging stability and alignment.
 
@@ -130,6 +138,7 @@ These samples are also assembled into **temporal preview videos** for debugging 
 ## RM Preview Video
 
 Sample preview videos are included in this repository.
+
 
 Each frame shows:
 - lip / left eye / right eye patches side by side
