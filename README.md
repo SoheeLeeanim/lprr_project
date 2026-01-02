@@ -33,8 +33,8 @@ This repository follows the same modular structure and training order.
 - ✅ APEM implemented (MediaPipe FaceMesh-based patch extraction)
 - ✅ RM implemented and trained **per patch** (lip / eye_L / eye_R)
 - ✅ RM preview video generation (temporal visualization)
-- 🚧 WEM implementation (in progress)
-- 🚧 PCA data generation (Blender script, upcoming)
+- ✅ WEM implementation 
+- ✅ PCA data generation
 
 ---
 
