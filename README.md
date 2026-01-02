@@ -157,9 +157,58 @@ The preview is used to:
 
 ## WEM (Weight Estimation Module)
 
-WEM maps reenacted patches to **PCA-compressed blendshape weights**
+WEM maps reenacted local facial patches to **PCA-compressed facial control weights**, following the formulation in the original paper.
 
-(Currently under development.)
+### PCA-based Supervision
+
+To construct the regression target space, PCA is applied directly to the **target character’s facial control curves**.
+
+- Target-side facial animation is exported from a MetaHuman character
+- Engine-level facial control curves are used  
+  (`CTRL_expressions_*`, 260 dimensions per frame)
+- PCA reduces the control space from **260 → 32 dimensions**
+- Generated PCA assets:
+  - `pca_basis.npy`
+  - `pca_mean.npy`
+  - `pca_weight.npy`
+
+This design ensures that WEM predicts weights in the **exact control space used by the runtime facial rig**, avoiding ambiguity between ARKit, blendshape, or intermediate representations.
+
+### WEM Model
+
+**Input**
+- Reenacted target patches from RM:
+  - lip
+  - left eye
+  - right eye
+- Patches are channel-concatenated  
+  (9 × 128 × 128)
+
+**Output**
+- PCA weight vector (32-dimensional)
+
+**Architecture**
+- Convolutional encoder
+- MLP-based regression head
+
+**Training**
+- Supervised regression using PCA weights as ground truth
+- Loss: Mean Squared Error (MSE)
+- Stable train/validation convergence confirmed
+
+### End-to-End Verification
+
+The full inference pipeline has been validated numerically:
+RM reenacted patches
+→ WEM regression
+→ PCA weight prediction
+→ PCA inverse transform
+→ Full 260-dim facial control curve reconstruction
+
+Predicted control curves exhibit correct value ranges, temporal continuity, and strict frame alignment with RM outputs.
+
+Visualization focuses on numerical and structural validation rather than final character rendering.
+
 
 ---
 
